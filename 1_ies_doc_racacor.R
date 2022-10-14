@@ -16,7 +16,8 @@ ies <- ies %>%
          doc_pardos = QT_DOC_EX_PARDA,
          doc_indigenas = QT_DOC_EX_INDIGENA,
          doc_amarelos = QT_DOC_EX_AMARELA,
-         doc_na = QT_DOC_EX_COR_ND)
+         doc_na = QT_DOC_EX_COR_ND,
+         doc_ex_total = QT_DOC_EXE)
 
 doc_racacor <- ies %>% 
   group_by(ano) %>% 
@@ -25,9 +26,11 @@ doc_racacor <- ies %>%
             pardos = sum(doc_pardos, na.rm = T),
             indigenas = sum(doc_indigenas, na.rm = T),
             amarelos = sum(doc_amarelos, na.rm = TRUE),
-            na = sum(doc_na, na.rm = TRUE)) %>% 
+            na = sum(doc_na, na.rm = TRUE),
+            total_ex = sum(doc_ex_total, na.rm = TRUE)) %>% 
   mutate(negros = pretos + pardos,
-         outros = indigenas + amarelos)
+         outros = indigenas + amarelos,
+         perc_brancos = brancos/total_ex)
 
 doc_racacor %>% 
   filter(ano != 2009) %>% 
@@ -48,3 +51,10 @@ doc_racacor %>%
   geom_line(aes(y=na), linetype = "dashed")
 
 
+doc_racacor %>% 
+  filter(ano != 2009) %>% 
+  ggplot(aes(ano))+
+  geom_line(aes(y=perc_brancos),
+            color= "grey", linetype="dashed")+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0.25,0.75))
