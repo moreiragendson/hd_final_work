@@ -58,3 +58,24 @@ doc_racacor %>%
             color= "grey", linetype="dashed")+
   scale_y_continuous(labels = scales::percent,
                      limits = c(0.25,0.75))
+
+
+doc_racacor <- doc_racacor %>% 
+  select(-perc_brancos)
+
+vars <- c("brancos",
+          "pretos",
+          "pardos",
+          "indigenas",
+          "amarelos",
+          "na",
+          "negros",
+          "outros",
+          "total_ex")
+
+doc_raca_cor <- doc_racacor %>% 
+  pivot_longer(
+    cols = all_of(vars),
+    names_to = "cat",
+    values_to = "qtd")
+
