@@ -1,6 +1,23 @@
 
+# Estatísticas sobre os docentes por raça cor
 
-# Estatísticas sobre os docentes por raça cor -----------------------------
+
+# set style ---------------------------------------------------------------
+
+
+style <- theme_minimal()+
+  theme(text = element_text(family = "serif", face = "bold", size=12),
+        axis.text.x = element_text(angle = 45),
+        legend.title = element_blank(),
+        legend.position = "bottom")
+
+# source functions --------------------------------------------------------
+
+source("0_functions.R")
+
+
+# data wrangling ----------------------------------------------------------
+
 
 ies <- read_regex("(IES)")
 
@@ -17,65 +34,85 @@ ies <- ies %>%
          doc_indigenas = QT_DOC_EX_INDIGENA,
          doc_amarelos = QT_DOC_EX_AMARELA,
          doc_na = QT_DOC_EX_COR_ND,
-         doc_ex_total = QT_DOC_EXE)
+         doc_ex_total = QT_DOC_EXE) %>% 
+  mutate(doc_negros = doc_pretos + doc_pardos,
+         doc_outros = doc_amarelos + doc_indigenas)
 
-doc_racacor <- ies %>% 
+# check if new colums have missing values
+ies %>% 
+  filter(is.na(doc_negros) & ano!=2009) %>% 
+  select(starts_with("doc"))
+
+names(ies)
+
+glimpse(ies)
+
+
+# summarise data ----------------------------------------------------------
+
+
+doc_raca_cor <- ies %>% 
+  filter(ano != 2009) %>% 
   group_by(ano) %>% 
-  summarise(brancos = sum(doc_brancos, na.rm = T),
-            pretos = sum(doc_pretos, na.rm = T),
-            pardos = sum(doc_pardos, na.rm = T),
-            indigenas = sum(doc_indigenas, na.rm = T),
-            amarelos = sum(doc_amarelos, na.rm = TRUE),
-            na = sum(doc_na, na.rm = TRUE),
-            total_ex = sum(doc_ex_total, na.rm = TRUE)) %>% 
-  mutate(negros = pretos + pardos,
-         outros = indigenas + amarelos,
-         perc_brancos = brancos/total_ex)
+  summarise(negros = sum(doc_negros, na.rm = T),
+            brancos = sum(doc_brancos, na.rm = T),
+            outros = sum(doc_outros, na.rm = T),
+            na = sum(doc_na, na.rm = T)) %>% 
+  pivot_longer(all_of(c("negros", "brancos", "outros", "na")),
+               names_to = "racacor",
+               values_to = "count") %>% 
+  group_by(ano, racacor) %>% 
+  summarise(count = sum(count)) %>% 
+  mutate(perc = count/sum(count))
 
-doc_racacor %>% 
-  filter(ano != 2009) %>% 
-  ggplot(aes(ano))+
-  geom_line(aes(y=brancos), color= "grey")+
-  geom_line(aes(y=pretos), color = "black")+
-  geom_line(aes(y=pardos), color = "brown")+
-  geom_line(aes(y=indigenas), color = "green")+
-  geom_line(aes(y=amarelos), color = "yellow")+
-  geom_line(aes(y=na), linetype = "dashed")
-
-doc_racacor %>% 
-  filter(ano != 2009) %>% 
-  ggplot(aes(ano))+
-  geom_line(aes(y=brancos), color= "grey")+
-  geom_line(aes(y=negros), color = "brown")+
-  geom_line(aes(y=outros), color = "green")+
-  geom_line(aes(y=na), linetype = "dashed")
+# checking
+doc_raca_cor %>% 
+  filter(ano == 2010) %>% 
+  pull(perc) %>% 
+  sum()
 
 
-doc_racacor %>% 
-  filter(ano != 2009) %>% 
-  ggplot(aes(ano))+
-  geom_line(aes(y=perc_brancos),
-            color= "grey", linetype="dashed")+
-  scale_y_continuous(labels = scales::percent,
-                     limits = c(0.25,0.75))
+doc_raca_cor <- doc_raca_cor %>% 
+  mutate(racacor = case_when(racacor=="brancos" ~ "Brancos",
+                             racacor=="negros" ~ "Negros",
+                             racacor=="outros" ~ "Outros",
+                             racacor=="na"~ as.character(NA)),
+         racacor = fct_explicit_na(racacor, "Sem informação/Não declarada"))
+
+# série histórica (percentual) --------------------------------------------
 
 
-doc_racacor <- doc_racacor %>% 
-  select(-perc_brancos)
+doc_raca_cor_perc <- doc_raca_cor %>% 
+  ggplot(aes(ano, perc, color=racacor))+
+  geom_line(linetype="solid")+
+  geom_point()+
+  scale_x_continuous(breaks = lab_years(doc_raca_cor, ano))+
+  scale_y_continuous(labels = scales::percent)+
+  style+
+  labs(title = "Docentes em IES por raça/cor",
+       subtitle = "Censo da Educação Superior (Inep)",
+       x = "Ano",
+       y = "Docentes em exercício (%)",
+       caption = "github.com/moreiragendson")
 
-vars <- c("brancos",
-          "pretos",
-          "pardos",
-          "indigenas",
-          "amarelos",
-          "na",
-          "negros",
-          "outros",
-          "total_ex")
+doc_raca_cor_perc
 
-doc_raca_cor <- doc_racacor %>% 
-  pivot_longer(
-    cols = all_of(vars),
-    names_to = "cat",
-    values_to = "qtd")
+# série histórica (n) -----------------------------------------------------
 
+
+doc_raca_cor_count <- doc_raca_cor %>%
+  ggplot(aes(ano, count, color=racacor))+
+  geom_line(linetype="solid")+
+  geom_point()+
+  scale_x_continuous(breaks = lab_years(doc_raca_cor, ano))+
+  # transformar em função
+  scale_y_continuous(labels = scales::comma_format(big.mark = ".",
+                                                   decimal.mark = ","))+
+  style +
+  labs(title = "Docentes em IES por raça/cor",
+       subtitle = "Censo da Educação Superior (Inep)",
+       x="Ano",
+       y="Docentes em exercício (n)",
+       caption="github.com/moreiragendson")
+
+doc_raca_cor_count
