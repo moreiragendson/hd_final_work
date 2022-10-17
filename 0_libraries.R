@@ -4,5 +4,6 @@
 library(tidyverse)
 library(janitor)
 library(magrittr)
-library(extrafont)
 library(geobr)
+library(gtools)
+library(patchwork)

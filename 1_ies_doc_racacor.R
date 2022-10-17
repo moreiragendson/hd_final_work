@@ -1,14 +1,19 @@
 
-# Estatísticas sobre os docentes por raça cor
+# Estatísticas sobre os docentes por raça cor ao longo dos anos
 
 
-# set style ---------------------------------------------------------------
+# set style_line ---------------------------------------------------------------
 
 
-style <- theme_minimal()+
-  theme(text = element_text(family = "serif", face = "bold", size=12),
-        axis.text.x = element_text(angle = 45),
-        legend.title = element_blank(),
+style_line <- theme_minimal()+
+  theme(plot.title = element_text(family = "serif", face = "bold", size = 14, hjust = 0.5),
+        plot.subtitle = element_text(family = "serif", size = 8, hjust = 0.5),
+        plot.caption = element_text(size = 10, family = "serif", face = "bold"),
+        legend.text = element_text(family = "serif", size = 10),
+        legend.title = element_text(family = "serif", face = "bold", size = 10),
+        axis.title = element_text(family = "serif", size = 10, face = "italic"),
+        axis.text.x = element_text(face = "bold", angle = 45, size = 8),
+        axis.text.y = element_text(size = 8),
         legend.position = "bottom")
 
 # source functions --------------------------------------------------------
@@ -87,12 +92,13 @@ doc_raca_cor_perc <- doc_raca_cor %>%
   geom_line(linetype="solid")+
   geom_point()+
   scale_x_continuous(breaks = lab_years(doc_raca_cor, ano))+
-  scale_y_continuous(labels = scales::percent)+
-  style+
+  scale_y_continuous(labels = scales::percent, breaks = seq(0,0.6,0.1))+
+  style_line+
   labs(title = "Docentes em IES por raça/cor",
        subtitle = "Censo da Educação Superior (Inep)",
        x = "Ano",
-       y = "Docentes em exercício (%)",
+       y = "Docentes em exercício",
+       color="Cor ou raça",
        caption = "github.com/moreiragendson")
 
 doc_raca_cor_perc
@@ -108,11 +114,12 @@ doc_raca_cor_count <- doc_raca_cor %>%
   # transformar em função
   scale_y_continuous(labels = scales::comma_format(big.mark = ".",
                                                    decimal.mark = ","))+
-  style +
+  style_line +
   labs(title = "Docentes em IES por raça/cor",
        subtitle = "Censo da Educação Superior (Inep)",
        x="Ano",
-       y="Docentes em exercício (n)",
-       caption="github.com/moreiragendson")
+       y="Docentes em exercício",
+       caption="github.com/moreiragendson",
+       color="Cor ou raça")
 
 doc_raca_cor_count
