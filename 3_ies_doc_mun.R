@@ -25,30 +25,10 @@ ies %>%
 glimpse(ies)
 
 
-sf_mun <- geobr::read_municipality()
-
-# perc de stricto sensu por município -------------------------------------
-
-
-# ies %>% 
-#   group_by(cod_municipio) %>% 
-#   summarise(perc = sum(doc_stricto_sensu)/sum(doc_ex_total)) %>% 
-#   mutate(perc_cat =  quantcut(perc, q=7)) %>% 
-#   right_join(sf_mun, by = c("cod_municipio" = "code_muni")) %>% 
-#   ggplot()+
-#   geom_sf(aes(fill=perc_cat, geometry=geom), color="grey",size=0.2)+
-#   theme_minimal()+
-#   scale_fill_brewer(palette = "Blues", direction = 1)+
-#   style_sf(T)
-
-
-
 # IES com mais docentes com stricto sensu ---------------------------------
 
 doc_st_se <- ies %>% 
-  mutate(
-         # ies_sigla = fct_explicit_na(ies_sigla),
-         ies_sigla = fct_other(ies_sigla, drop = NA)) %>% 
+  mutate(ies_sigla = fct_other(ies_sigla, drop = NA)) %>% 
   filter(ano==2020) %>%
   group_by(ies_sigla) %>% 
   summarise(n = sum(doc_stricto_sensu),
@@ -59,23 +39,8 @@ doc_st_se %>%
   slice_max(n, n = 30) %>%
   ggplot()+
   geom_col(aes(
-    fct_reorder(ies_sigla, n),
-               # ies_sigla,
-               n))+
+    fct_reorder(ies_sigla, n), n))+
   coord_flip()
-
-# perc
-doc_st_se %>%
-  slice_min(perc, n = 30) %>% 
-  ggplot()+
-  geom_col(aes(
-    fct_reorder(ies_sigla, perc),
-               # ies_sigla,
-               perc))+
-  scale_y_continuous(labels = scales::percent)+
-  coord_flip()
-
-
 
 # percentual ao longo dos anos --------------------------------------------
 
