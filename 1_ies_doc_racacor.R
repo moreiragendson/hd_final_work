@@ -2,24 +2,10 @@
 # Estatísticas sobre os docentes por raça cor ao longo dos anos
 
 
-# set style_line ---------------------------------------------------------------
-
-
-style_line <- theme_minimal()+
-  theme(plot.title = element_text(family = "serif", face = "bold", size = 14, hjust = 0.5),
-        plot.subtitle = element_text(family = "serif", size = 8, hjust = 0.5),
-        plot.caption = element_text(size = 10, family = "serif", face = "bold"),
-        legend.text = element_text(family = "serif", size = 10),
-        legend.title = element_text(family = "serif", face = "bold", size = 10),
-        axis.title = element_text(family = "serif", size = 10, face = "italic"),
-        axis.text.x = element_text(face = "bold", angle = 45, size = 8),
-        axis.text.y = element_text(size = 8),
-        legend.position = "bottom")
-
 # source functions --------------------------------------------------------
 
 source("0_functions.R")
-
+source("0_style_functions.R")
 
 # data wrangling ----------------------------------------------------------
 
@@ -31,17 +17,7 @@ ies %<>%
 
 glimpse(ies)
 
-ies <- ies %>% 
-  rename(ano = NU_ANO_CENSO,
-         doc_brancos = QT_DOC_EX_BRANCA,
-         doc_pretos = QT_DOC_EX_PRETA,
-         doc_pardos = QT_DOC_EX_PARDA,
-         doc_indigenas = QT_DOC_EX_INDIGENA,
-         doc_amarelos = QT_DOC_EX_AMARELA,
-         doc_na = QT_DOC_EX_COR_ND,
-         doc_ex_total = QT_DOC_EXE) %>% 
-  mutate(doc_negros = doc_pretos + doc_pardos,
-         doc_outros = doc_amarelos + doc_indigenas)
+
 
 # check if new colums have missing values
 ies %>% 
@@ -93,7 +69,7 @@ doc_raca_cor_perc <- doc_raca_cor %>%
   geom_point()+
   scale_x_continuous(breaks = lab_years(doc_raca_cor, ano))+
   scale_y_continuous(labels = scales::percent, breaks = seq(0,0.6,0.1))+
-  style_line+
+  style_line()+
   labs(title = "Docentes em IES por raça/cor",
        subtitle = "Censo da Educação Superior (Inep)",
        x = "Ano",

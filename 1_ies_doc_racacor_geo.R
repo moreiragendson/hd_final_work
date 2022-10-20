@@ -3,25 +3,7 @@
 # Para isso utilizamos o percentual de docentes brancos
 
 
-# set style ---------------------------------------------------------------
-
-style_sf <- theme(plot.title = element_text(family = "serif", face = "bold", size = 14, hjust = 0.5),
-                  plot.subtitle = element_text(family = "serif", size = 8, hjust = 0.5),
-                  plot.caption = element_text(face = "bold", size = 10),
-                  plot.caption.position = "plot", # caption se alinha ao plot
-                  panel.border = element_blank(),
-                  panel.grid = element_blank(),
-                  axis.ticks = element_blank(),
-                  axis.text = element_blank(),
-                  legend.position = "none",
-                  legend.title = element_text(face = "bold"))
-
-
 # join sf -----------------------------------------------------------------
-
-ies <- ies %>% 
-  rename(cod_uf = CO_UF_IES,
-         cod_municipio = CO_MUNICIPIO_IES)
 
 sf_uf <- read_state(year = 2010)
 
@@ -46,7 +28,7 @@ maps_fct <- function(q, year){
     geom_sf(aes(fill=perc_cat, geometry=geom), color="black", size=0.2, alpha=1)+
     theme_minimal()+
     scale_fill_brewer(palette = "Blues", direction = 1)+
-    style_sf+
+    style_sf()+
     labs(title = {{q}})
   
 }  
