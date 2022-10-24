@@ -6,21 +6,7 @@ source("0_libraries.R")
 source("0_functions.R")
 source("1_ies_read.R")
 
-ies <- read_regex("(IES)")
-
 names(ies)
-
-ies %>% 
-  pull(NO_IES) %>% 
-  length() == ies %>% 
-  pull(NO_IES) %>% 
-  unique() %>% 
-  length()
-
-
-ies %>% 
-  select(starts_with("QT")) %>% 
-  names()
 
 glimpse(ies)
 
@@ -111,8 +97,10 @@ fct_sf <- function(data){
     ggplot(aes(fill=perc_cat))+
     geom_sf(aes(geometry=geom))+
     scale_fill_brewer(palette = "Blues")+
-    style_sf(T)+
-    labs(title = ano)
+    style_sf()+
+    labs(title = "Docentes com pós-graduação stricto-sensu (%)",
+         subtitle = str_c("Censo da Educação Superior", ano, sep = " - " ),
+         caption = "github.com/moreiragendson")
   
 }
 
@@ -122,5 +110,4 @@ fct_sf <- function(data){
 
 listas_geo %>% 
   map(.f= fct_sf)
-
 

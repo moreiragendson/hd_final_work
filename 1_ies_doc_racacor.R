@@ -90,7 +90,7 @@ doc_raca_cor_count <- doc_raca_cor %>%
   # transformar em função
   scale_y_continuous(labels = scales::comma_format(big.mark = ".",
                                                    decimal.mark = ","))+
-  style_line +
+  style_line() +
   labs(title = "Docentes em IES por raça/cor",
        subtitle = "Censo da Educação Superior (Inep)",
        x="Ano",
