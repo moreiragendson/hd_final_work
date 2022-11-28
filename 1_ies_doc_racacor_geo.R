@@ -1,4 +1,5 @@
 
+
 # Nesta análise, verificamos a estratificação racial por UFs
 # Para isso utilizamos o percentual de docentes brancos
 
@@ -43,7 +44,7 @@ mapas_comparados <- (mapas[[1]] | mapas[[2]] | mapas[[3]]) /
 # gráfico escolhido -------------------------------------------------------
 
 # 9 categorias
-mapas[[8]]+style_sf+
+mapas[[8]]+style_sf()+
   labs(title = "Percentual de docentes brancos em exercício por UF",
        subtitle = "Censo da Educação Superior 2020 (Inep)",
        caption = "github.com/moreiragendson")
